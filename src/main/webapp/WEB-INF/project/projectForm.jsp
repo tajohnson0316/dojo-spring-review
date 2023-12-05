@@ -2,7 +2,7 @@
   Created by IntelliJ IDEA.
   User: arman
   Date: 6/21/2023
-  Time: 3:20 PM
+  Time: 4:10 PM
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -14,7 +14,6 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <!-- for rendering errors on PUT routes -->
 <%@ page isErrorPage="true" %>
-
 <html data-bs-theme="dark">
 <head>
   <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
@@ -56,55 +55,41 @@
     </div>
   </div>
 </nav>
-
-<main class="container-fluid p-4">
-  <h1 class="mb-3">Welcome, ${username}!</h1>
-  <div class="d-flex justify-content-between align-items-end mb-3">
-    <p>Projects you can join:</p>
-    <a href="/projects/new/form" class="btn btn-outline-success" role="button">
-      + New Project
-    </a>
+<div class="container p-5">
+  <h1>Create a Project</h1>
+  <form:form action="/projects/new/create" method="post" modelAttribute="project">
+    <form:input type="hidden" path="lead" value="${userId}"/>
+  <div class="mb-3">
+    <form:label path="projectName" class="form-label">
+      Project Name:
+    </form:label>
+    <form:input path="projectName" class="form-control"/>
+    <p class="text-danger">
+      <form:errors path="projectName"/>
+    </p>
   </div>
-  <div class="d-flex justify-content-center">
-    <div class="card w-100 mb-5">
-      <div class="card-body">
-        <table class="table table-striped table-bordered">
-          <thead>
-          <tr>
-            <th scope="col">Project Name</th>
-            <th scope="col">Project Lead</th>
-            <th scope="col">Due Date</th>
-            <th scope="col">Actions</th>
-          </tr>
-          </thead>
-          <tbody>
-          <c:forEach var="project" items="${allProjects}">
-            <tr>
-              <td>
-                <a href="/projects/${project.id}">${project.projectName}</a>
-              </td>
-              <td>
-                  ${project.lead.username}
-              </td>
-              <td>
-                <fmt:formatDate value="${project.dueDate}"/>
-              </td>
-              <td>
-                <div class="d-flex justify-content-center">
-                  <form action="/projects/${project.id}/join" method="post">
-                    <button type="submit" class="btn btn-primary">
-                      Join Team
-                    </button>
-                  </form>
-                </div>
-              </td>
-            </tr>
-          </c:forEach>
-          </tbody>
-        </table>
-      </div>
-    </div>
+  <div class="mb-3">
+    <form:label path="description" class="form-label">
+      Project Description:
+    </form:label>
+    <form:textarea path="description" class="form-control"/>
+    <p class="text-danger">
+      <form:errors path="description"/>
+    </p>
   </div>
-</main>
+  <div class="mb-3">
+    <form:label path="dueDate" class="form-label">
+      Due Date:
+    </form:label>
+    <form:input type="date" path="dueDate" class="form-control"/>
+    <p class="text-danger">
+      <form:errors path="dueDate"/>
+    </p>
+  </div>
+  <div class="d-flex justify-content-end gap-3">
+    <a href="/dashboard" class="btn btn-danger" role="button">Cancel</a>
+    <button type="submit" class="btn btn-primary">Confirm</button>
+  </div>
+  </form:form>
 </body>
 </html>

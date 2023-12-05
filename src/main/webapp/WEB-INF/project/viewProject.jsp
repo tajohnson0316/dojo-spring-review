@@ -2,7 +2,7 @@
   Created by IntelliJ IDEA.
   User: arman
   Date: 6/21/2023
-  Time: 3:20 PM
+  Time: 6:54 PM
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
@@ -14,13 +14,11 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <!-- for rendering errors on PUT routes -->
 <%@ page isErrorPage="true" %>
-
 <html data-bs-theme="dark">
 <head>
   <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
   <script type="text/javascript" src="/js/app.js"></script>
   
-  <%-- TODO: PAGE TITLE --%>
   <title>Title</title>
 </head>
 <body>
@@ -56,55 +54,31 @@
     </div>
   </div>
 </nav>
-
-<main class="container-fluid p-4">
-  <h1 class="mb-3">Welcome, ${username}!</h1>
-  <div class="d-flex justify-content-between align-items-end mb-3">
-    <p>Projects you can join:</p>
-    <a href="/projects/new/form" class="btn btn-outline-success" role="button">
-      + New Project
-    </a>
-  </div>
-  <div class="d-flex justify-content-center">
-    <div class="card w-100 mb-5">
-      <div class="card-body">
-        <table class="table table-striped table-bordered">
-          <thead>
-          <tr>
-            <th scope="col">Project Name</th>
-            <th scope="col">Project Lead</th>
-            <th scope="col">Due Date</th>
-            <th scope="col">Actions</th>
-          </tr>
-          </thead>
-          <tbody>
-          <c:forEach var="project" items="${allProjects}">
-            <tr>
-              <td>
-                <a href="/projects/${project.id}">${project.projectName}</a>
-              </td>
-              <td>
-                  ${project.lead.username}
-              </td>
-              <td>
-                <fmt:formatDate value="${project.dueDate}"/>
-              </td>
-              <td>
-                <div class="d-flex justify-content-center">
-                  <form action="/projects/${project.id}/join" method="post">
-                    <button type="submit" class="btn btn-primary">
-                      Join Team
-                    </button>
-                  </form>
-                </div>
-              </td>
-            </tr>
-          </c:forEach>
-          </tbody>
-        </table>
+<div class="container p-5">
+  <div class="card w-100 mb-3">
+    <div class="card-header text-center fs-3">
+      ${project.projectName}
+    </div>
+    <div class="card-body">
+      <div class="d-flex justify-content-start gap-3 mb-3">
+        <span class="fw-bold">Description:</span>
+        <span>${project.description}</span>
+      </div>
+      <div class="d-flex justify-content-start gap-3 mb-3">
+        <span class="fw-bold">Due Date:</span>
+        <span><fmt:formatDate value="${project.dueDate}"/></span>
       </div>
     </div>
   </div>
-</main>
+  <a href="/projects/${project.id}/tasks">View Tasks</a>
+  <c:if test="${project.lead.id == userId}">
+    <div class="d-flex justify-content-end mb-5">
+      <form action="/projects/delete/${project.id}" method="post">
+        <input type="hidden" name="_method" value="delete">
+        <button type="submit" class="btn btn-danger">Delete Project</button>
+      </form>
+    </div>
+  </c:if>
+</div>
 </body>
 </html>

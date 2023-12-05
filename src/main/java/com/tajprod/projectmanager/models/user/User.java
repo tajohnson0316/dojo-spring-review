@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -117,19 +116,19 @@ public class User {
     this.confirmPassword = confirmPassword;
   }
 
-  public Date getCreatedAt() {
-    return createdAt;
+  public List<Project> getLeadProjects() {
+    return leadProjects;
   }
 
-  public void setCreatedAt(Date createdAt) {
-    this.createdAt = createdAt;
+  public void setLeadProjects(List<Project> leadProjects) {
+    this.leadProjects = leadProjects;
   }
 
-  public Date getUpdatedAt() {
-    return updatedAt;
+  public List<Project> getProjects() {
+    return projects;
   }
 
-  public void setUpdatedAt(Date updatedAt) {
-    this.updatedAt = updatedAt;
+  public void setProjects(List<Project> projects) {
+    this.projects = projects;
   }
 }
