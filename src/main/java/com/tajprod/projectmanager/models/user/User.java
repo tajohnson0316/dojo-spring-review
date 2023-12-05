@@ -1,12 +1,13 @@
 package com.tajprod.projectmanager.models.user;
 
+import com.tajprod.projectmanager.models.project.Project;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -42,25 +43,19 @@ public class User {
   @Size(min = 8, max = 128, message = "Password must be between 8 and 128 characters")
   private String confirmPassword;
 
-  @Column(updatable = false)
-  @DateTimeFormat(pattern = "yyyy-MM-dd")
-  private Date createdAt;
+  @OneToMany(mappedBy = "lead", fetch = FetchType.LAZY)
+  private List<Project> leadProjects;
 
-  @DateTimeFormat(pattern = "yyyy-MM-dd")
-  private Date updatedAt;
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+    name = "users_projects",
+    joinColumns = @JoinColumn(name = "user_id"),
+    inverseJoinColumns = @JoinColumn(name = "project_id")
+  )
+  private List<Project> projects;
 
   public User() {
 
-  }
-
-  @PrePersist
-  protected void onCreate() {
-    this.createdAt = new Date();
-  }
-
-  @PreUpdate
-  protected void onUpdate() {
-    this.updatedAt = new Date();
   }
 
   // === GETTERS & SETTERS ===
