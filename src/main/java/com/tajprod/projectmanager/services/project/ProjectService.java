@@ -44,7 +44,7 @@ public class ProjectService {
     return optional.orElse(null);
   }
 
-  public List<Project> getProjectsNotJoined(UUID userId) {
+  public List<Project> getUnjoinedProjects(UUID userId) {
     User user = userService.getUserById(userId);
     List<Project> unjoinedProjects = allProjects();
 

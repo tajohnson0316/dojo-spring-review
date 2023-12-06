@@ -38,7 +38,9 @@ public class ProjectController {
     User user = userService.getUserById(userId);
 
     model.addAttribute("username", user.getUsername());
-    model.addAttribute("allProjects", projectService.allProjects());
+    model.addAttribute("userId", userId);
+    model.addAttribute("unjoinedProjects", projectService.getUnjoinedProjects(userId));
+    model.addAttribute("joinedProjects", user.getProjects());
 
     return "/project/dashboard.jsp";
   }
@@ -133,6 +135,18 @@ public class ProjectController {
   }
 
   //  =============== PUT ROUTES ===============
+
+  // *** ADD USER TO PROJECT TEAM ***
+  @PostMapping("/projects/{projectId}/join")
+  public String addUserToProject(
+    HttpSession session,
+    @PathVariable("projectId") Long id
+  ) {
+    UUID userId = (UUID) session.getAttribute("userId");
+    projectService.addUserToTeam(id, userId);
+
+    return "redirect:/dashboard";
+  }
 
   //  =============== DELETE ROUTES ===============
 }

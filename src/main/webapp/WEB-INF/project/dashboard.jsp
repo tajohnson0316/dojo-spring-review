@@ -78,7 +78,7 @@
           </tr>
           </thead>
           <tbody>
-          <c:forEach var="project" items="${allProjects}">
+          <c:forEach var="project" items="${unjoinedProjects}">
             <tr>
               <td>
                 <a href="/projects/${project.id}">${project.projectName}</a>
@@ -97,6 +97,67 @@
                     </button>
                   </form>
                 </div>
+              </td>
+            </tr>
+          </c:forEach>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <hr class="mb-5">
+  <p>Projects you're a part of:</p>
+  <div class="d-flex justify-content-center">
+    <div class="card w-100">
+      <div class="card-body">
+        <table class="table table-striped table-bordered">
+          <thead>
+          <tr>
+            <th scope="col">Project Name</th>
+            <th scope="col">Project Lead</th>
+            <th scope="col">Due Date</th>
+            <th scope="col">Actions</th>
+          </tr>
+          </thead>
+          <tbody>
+          <%-- TODO: LIST OF JOINED PROJECTS --%>
+          <c:forEach var="project" items="${projectsJoined}">
+            <tr>
+              <td>
+                <a href="/projects/${project.id}">${project.title}</a>
+              </td>
+              <td>
+                  ${project.lead.userName}
+              </td>
+              <td>
+                <fmt:formatDate value="${project.dueDate}"/>
+              </td>
+              <td>
+                  <%-- CONDITIONAL RENDERING OF EDIT OPTION FOR TEAM LEADS --%>
+                <c:choose>
+                  <c:when test="${project.lead.id.equals(userId)}">
+                    <div class="d-flex justify-content-center">
+                      <form action="/projects/delete/${project.id}" method="post">
+                        <div class="btn-group" role="group">
+                          <a href="/projects/edit/${project.id}" class="btn btn-warning">
+                            Edit
+                          </a>
+                          <input type="hidden" name="_method" value="delete">
+                          <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                      </form>
+                    </div>
+                  </c:when>
+                  <c:otherwise>
+                    <div class="d-flex justify-content-center">
+                      <form action="/projects/${project.id}/leave" method="post">
+                        <button type="submit" class="btn btn-outline-danger">
+                          Leave Team
+                        </button>
+                      </form>
+                    </div>
+                  </c:otherwise>
+                </c:choose>
               </td>
             </tr>
           </c:forEach>
