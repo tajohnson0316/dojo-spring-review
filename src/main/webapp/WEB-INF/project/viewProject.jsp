@@ -65,6 +65,10 @@
         <span>${project.description}</span>
       </div>
       <div class="d-flex justify-content-start gap-3 mb-3">
+        <span class="fw-bold">Team Size:</span>
+        <span>${project.team.size()}</span>
+      </div>
+      <div class="d-flex justify-content-start gap-3 mb-3">
         <span class="fw-bold">Due Date:</span>
         <span><fmt:formatDate value="${project.dueDate}"/></span>
       </div>

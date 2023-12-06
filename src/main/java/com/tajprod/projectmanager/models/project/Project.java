@@ -9,7 +9,8 @@ import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Project {
@@ -34,13 +35,8 @@ public class Project {
   @JoinColumn(name = "user_id")
   private User lead;
 
-  @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-  @JoinTable(
-    name = "users_projects",
-    joinColumns = @JoinColumn(name = "project_id"),
-    inverseJoinColumns = @JoinColumn(name = "user_id")
-  )
-  private List<User> team;
+  @ManyToMany(mappedBy = "projects")
+  private Set<User> team = new HashSet<>();
 
   @Column(updatable = false)
   @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -51,6 +47,18 @@ public class Project {
 
   public Project() {
 
+  }
+
+  // === UTILITY METHODS ===
+
+  public void addUserToTeam(User user) {
+    this.team.add(user);
+    user.getProjects().add(this);
+  }
+
+  public void removeUserFromTeam(User user) {
+    this.team.remove(user);
+    user.getProjects().remove(this);
   }
 
   @PrePersist
@@ -105,11 +113,11 @@ public class Project {
     this.lead = lead;
   }
 
-  public List<User> getTeam() {
+  public Set<User> getTeam() {
     return team;
   }
 
-  public void setTeam(List<User> team) {
+  public void setTeam(Set<User> team) {
     this.team = team;
   }
 

@@ -7,10 +7,8 @@ import com.tajprod.projectmanager.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class ProjectService {
@@ -25,7 +23,8 @@ public class ProjectService {
 
   // *** CREATE ***
   public Project createProject(Project project) {
-    project.setTeam(new ArrayList<>());
+    // On project creation, instantiate the team List and add the lead to the team
+    project.addUserToTeam(project.getLead());
 
     return projectRepository.save(project);
   }
@@ -44,49 +43,31 @@ public class ProjectService {
     return optional.orElse(null);
   }
 
-  public List<Project> getUnjoinedProjects(UUID userId) {
-    User user = userService.getUserById(userId);
-    List<Project> unjoinedProjects = allProjects();
-
-    // Loop through all projects and remove any that have the current user on the team
-    unjoinedProjects.removeIf(project -> project.getLead().equals(user) || project.getTeam().contains(user));
-
-    return unjoinedProjects;
-  }
-
   // =============== UPDATE METHODS ===============
 
-  public Project addUserToTeam(Long projectId, UUID userId) {
-    User user = userService.getUserById(userId);
-    Project project = getProjectById(projectId);
+  // *** ADD USER to Team ***
+  public void addUserToTeam(Project project, User user) {
+    project.addUserToTeam(user);
 
-    project.getTeam().add(user);
-
-    return projectRepository.save(project);
+    projectRepository.save(project);
   }
 
-  public Project removeUserFromTeam(Long projectId, UUID userId) {
-    User user = userService.getUserById(userId);
-    Project project = getProjectById(projectId);
+  // *** REMOVE USER to Team ***
+  public void removeUserFromTeam(Project project, User user) {
+    project.removeUserFromTeam(user);
 
-    project.getTeam().remove(user);
-
-    return projectRepository.save(project);
+    projectRepository.save(project);
   }
 
-  public Project updateProject(Project project) {
-    List<User> allUsers = userService.findAll();
-    List<User> usersInTeam = new ArrayList<>();
-
-    for (User user : allUsers) {
-      if (user.getProjects().contains(project)) {
-        usersInTeam.add(user);
-      }
-    }
-    project.setTeam(usersInTeam);
-    return projectRepository.save(project);
+  public void updateProject(Project project) {
+    projectRepository.save(project);
   }
 
   // =============== DELETE METHODS ===============
+
+  // *** Delete ONE BY ID ***
+  public void deleteProjectById(Long id) {
+    projectRepository.deleteById(id);
+  }
 
 }

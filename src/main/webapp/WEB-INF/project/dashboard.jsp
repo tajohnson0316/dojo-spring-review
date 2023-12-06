@@ -107,6 +107,7 @@
   </div>
   <hr class="mb-5">
   <p>Projects you're a part of:</p>
+  <p>Total projects: ${usersTotalProjects}</p>
   <div class="d-flex justify-content-center">
     <div class="card w-100">
       <div class="card-body">
@@ -121,13 +122,13 @@
           </thead>
           <tbody>
           <%-- TODO: LIST OF JOINED PROJECTS --%>
-          <c:forEach var="project" items="${projectsJoined}">
+          <c:forEach var="project" items="${joinedProjects}">
             <tr>
               <td>
-                <a href="/projects/${project.id}">${project.title}</a>
+                <a href="/projects/${project.id}">${project.projectName}</a>
               </td>
               <td>
-                  ${project.lead.userName}
+                  ${project.lead.username}
               </td>
               <td>
                 <fmt:formatDate value="${project.dueDate}"/>

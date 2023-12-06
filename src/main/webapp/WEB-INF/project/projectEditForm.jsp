@@ -86,6 +86,9 @@
         <form:errors path="dueDate"/>
       </p>
     </div>
+    <div class="mb-3">
+      <p>Total team members: ${project.team.size()}</p>
+    </div>
     <div class="d-flex justify-content-end gap-3">
       <a href="/dashboard" class="btn btn-danger" role="button">Cancel</a>
       <button type="submit" class="btn btn-success">Confirm Changes</button>

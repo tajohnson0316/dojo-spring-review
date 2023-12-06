@@ -6,7 +6,9 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -51,14 +53,25 @@ public class User {
     joinColumns = @JoinColumn(name = "user_id"),
     inverseJoinColumns = @JoinColumn(name = "project_id")
   )
-  private List<Project> projects;
+  private Set<Project> projects = new HashSet<>();
 
   public User() {
 
   }
 
-  // === GETTERS & SETTERS ===
+  // === UTILITY METHODS ===
 
+  public void addProject(Project project) {
+    this.projects.add(project);
+    project.getTeam().add(this);
+  }
+
+  public void removeProject(Project project) {
+    this.projects.remove(project);
+    project.getTeam().remove(this);
+  }
+
+  // === GETTERS & SETTERS ===
 
   public UUID getId() {
     return id;
@@ -124,11 +137,11 @@ public class User {
     this.leadProjects = leadProjects;
   }
 
-  public List<Project> getProjects() {
+  public Set<Project> getProjects() {
     return projects;
   }
 
-  public void setProjects(List<Project> projects) {
+  public void setProjects(Set<Project> projects) {
     this.projects = projects;
   }
 }

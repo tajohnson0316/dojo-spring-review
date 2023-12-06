@@ -10,11 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -39,7 +37,13 @@ public class ProjectController {
 
     model.addAttribute("username", user.getUsername());
     model.addAttribute("userId", userId);
-    model.addAttribute("unjoinedProjects", projectService.getUnjoinedProjects(userId));
+    model.addAttribute("usersTotalProjects", user.getProjects().size());
+
+    // Get all projects and remove any the current user is a part of
+    List<Project> unjoinedProjects = projectService.allProjects();
+    unjoinedProjects.removeIf(project -> user.getProjects().contains(project));
+    model.addAttribute("unjoinedProjects", unjoinedProjects);
+
     model.addAttribute("joinedProjects", user.getProjects());
 
     return "/project/dashboard.jsp";
@@ -136,17 +140,67 @@ public class ProjectController {
 
   //  =============== PUT ROUTES ===============
 
+  // *** UPDATE PROJECT ***
+  @PutMapping("/projects/update/{id}")
+  public String updateProject(
+    @Valid @ModelAttribute("project") Project project,
+    BindingResult result,
+    HttpSession session,
+    Model model
+  ) {
+    UUID userId = (UUID) session.getAttribute("userId");
+
+    if (result.hasErrors()) {
+      model.addAttribute("project", project);
+      model.addAttribute("userId", userId);
+      return "project/projectEditForm.jsp";
+    }
+
+    projectService.updateProject(project);
+
+    return String.format("redirect:/projects/%d", project.getId());
+  }
+
   // *** ADD USER TO PROJECT TEAM ***
   @PostMapping("/projects/{projectId}/join")
   public String addUserToProject(
     HttpSession session,
     @PathVariable("projectId") Long id
   ) {
-    UUID userId = (UUID) session.getAttribute("userId");
-    projectService.addUserToTeam(id, userId);
+    User user = userService.getUserById((UUID) session.getAttribute("userId"));
+    Project project = projectService.getProjectById(id);
+
+    projectService.addUserToTeam(project, user);
+
+    return "redirect:/dashboard";
+  }
+
+  // *** REMOVE USER FROM PROJECT TEAM ***
+  @PostMapping("/projects/{projectId}/leave")
+  public String removeUserFromProject(
+    HttpSession session,
+    @PathVariable("projectId") Long id
+  ) {
+    User user = userService.getUserById((UUID) session.getAttribute("userId"));
+    Project project = projectService.getProjectById(id);
+
+    projectService.removeUserFromTeam(project, user);
 
     return "redirect:/dashboard";
   }
 
   //  =============== DELETE ROUTES ===============
+
+  // *** DELETE PROJECT ***
+  @DeleteMapping("/projects/delete/{id}")
+  public String deleteProject(@PathVariable("id") Long id) {
+    Project project = projectService.getProjectById(id);
+    for (User user : project.getTeam()) {
+      user.removeProject(project);
+      userService.updateUser(user);
+    }
+    projectService.deleteProjectById(id);
+
+    return "redirect:/dashboard";
+  }
 }
