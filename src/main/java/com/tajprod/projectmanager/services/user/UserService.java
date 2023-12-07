@@ -97,7 +97,7 @@ public class UserService {
     return optional.orElse(null);
   }
 
-  public boolean isInvalidId(UUID id) {
+  public boolean isNotValidId(UUID id) {
     return getUserById(id) == null;
   }
 

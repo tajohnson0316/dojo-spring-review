@@ -3,7 +3,6 @@ package com.tajprod.projectmanager.services.project;
 import com.tajprod.projectmanager.models.project.Project;
 import com.tajprod.projectmanager.models.user.User;
 import com.tajprod.projectmanager.repositories.project.ProjectRepository;
-import com.tajprod.projectmanager.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +13,6 @@ import java.util.Optional;
 public class ProjectService {
   @Autowired
   private ProjectRepository projectRepository;
-
-  @Autowired
-  private UserService userService;
-
 
   // =============== CREATE METHODS ===============
 

@@ -1,5 +1,6 @@
 package com.tajprod.projectmanager.models.project;
 
+import com.tajprod.projectmanager.models.project.task.Task;
 import com.tajprod.projectmanager.models.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -9,14 +10,13 @@ import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
+@Table(name = "projects")
 public class Project {
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @NotBlank(message = "Required field. Please provide a name for the project")
@@ -38,6 +38,9 @@ public class Project {
 
   @ManyToMany(mappedBy = "projects")
   private Set<User> team = new HashSet<>();
+
+  @OneToMany(mappedBy = "project")
+  private List<Task> tasks = new ArrayList<>();
 
   @Column(updatable = false)
   @DateTimeFormat(pattern = "yyyy-MM-dd")
@@ -72,7 +75,7 @@ public class Project {
     this.updatedAt = new Date();
   }
 
-  // *** GETTERS & SETTERS ***
+  // === GETTERS & SETTERS ===
 
   public Long getId() {
     return id;
@@ -120,6 +123,14 @@ public class Project {
 
   public void setTeam(Set<User> team) {
     this.team = team;
+  }
+
+  public List<Task> getTasks() {
+    return tasks;
+  }
+
+  public void setTasks(List<Task> tasks) {
+    this.tasks = tasks;
   }
 
   public Date getCreatedAt() {

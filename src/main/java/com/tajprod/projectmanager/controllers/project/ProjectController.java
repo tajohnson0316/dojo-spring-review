@@ -1,8 +1,10 @@
 package com.tajprod.projectmanager.controllers.project;
 
 import com.tajprod.projectmanager.models.project.Project;
+import com.tajprod.projectmanager.models.project.task.Task;
 import com.tajprod.projectmanager.models.user.User;
 import com.tajprod.projectmanager.services.project.ProjectService;
+import com.tajprod.projectmanager.services.project.task.TaskService;
 import com.tajprod.projectmanager.services.user.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -23,6 +25,9 @@ public class ProjectController {
   @Autowired
   private ProjectService projectService;
 
+  @Autowired
+  private TaskService taskService;
+
   //  =============== GET ROUTES ===============
 
   // *** DISPLAY DASHBOARD ***
@@ -30,7 +35,7 @@ public class ProjectController {
   @GetMapping("/dashboard")
   public String dashboard(Model model, HttpSession session) {
     UUID userId = (UUID) session.getAttribute("userId");
-    if (userService.isInvalidId(userId)) {
+    if (userService.isNotValidId(userId)) {
       return "redirect:/logout";
     }
 
@@ -57,7 +62,7 @@ public class ProjectController {
     Model model
   ) {
     UUID userId = (UUID) session.getAttribute("userId");
-    if (userService.isInvalidId(userId)) {
+    if (userService.isNotValidId(userId)) {
       return "redirect:/logout";
     }
 
@@ -74,7 +79,7 @@ public class ProjectController {
     Model model
   ) {
     UUID userId = (UUID) session.getAttribute("userId");
-    if (userService.isInvalidId(userId)) {
+    if (userService.isNotValidId(userId)) {
       return "redirect:/logout";
     }
 
@@ -92,7 +97,7 @@ public class ProjectController {
     Model model
   ) {
     UUID userId = (UUID) session.getAttribute("userId");
-    if (userService.isInvalidId(userId)) {
+    if (userService.isNotValidId(userId)) {
       return "redirect:/logout";
     }
 
@@ -102,6 +107,26 @@ public class ProjectController {
     model.addAttribute("userId", userId);
 
     return "project/projectEditForm.jsp";
+  }
+
+  // *** VIEW TASKS ***
+  // TODO: Remove or dynamically render tasks that were created by users that have left the project's team
+  @GetMapping("/projects/{id}/tasks")
+  public String viewTasks(
+    @PathVariable("id") Long id,
+    @ModelAttribute("task") Task task,
+    HttpSession session,
+    Model model
+  ) {
+    UUID userId = (UUID) session.getAttribute("userId");
+    if (userService.isNotValidId(userId)) {
+      return "redirect:/logout";
+    }
+
+    model.addAttribute("project", projectService.getProjectById(id));
+    model.addAttribute("user", userService.getUserById(userId));
+
+    return "/project/task/viewTasks.jsp";
   }
 
   //  =============== POST ROUTES ===============
@@ -126,6 +151,31 @@ public class ProjectController {
     Project newProject = projectService.createProject(project);
 
     return String.format("redirect:/projects/%d", newProject.getId());
+  }
+
+  // *** CREATE TASK ***
+  @PostMapping("/projects/{projectId}/tasks/create")
+  public String createTask(
+    @PathVariable("projectId") Long id,
+    @Valid @ModelAttribute("task") Task task,
+    BindingResult result,
+    HttpSession session,
+    Model model
+  ) {
+    if (result.hasErrors()) {
+      UUID userId = (UUID) session.getAttribute("userId");
+      model.addAttribute("project", projectService.getProjectById(id));
+      model.addAttribute("user", userService.getUserById(userId));
+      model.addAttribute("task", task);
+
+      return "project/task/viewTasks.jsp";
+    }
+    Project project = projectService.getProjectById(id);
+    Task newTask = taskService.createTask(task);
+    project.getTasks().add(newTask);
+    projectService.updateProject(project);
+
+    return String.format("redirect:/projects/%d/tasks", project.getId());
   }
 
   //  =============== PUT ROUTES ===============
