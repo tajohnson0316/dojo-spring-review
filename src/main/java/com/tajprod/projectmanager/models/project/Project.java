@@ -2,12 +2,13 @@ package com.tajprod.projectmanager.models.project;
 
 import com.tajprod.projectmanager.models.user.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,8 +29,8 @@ public class Project {
 
   @NotNull(message = "Required field. Please provide a due date for the project")
   @DateTimeFormat(pattern = "yyyy-MM-dd")
-  @Future(message = "Due date must be some time in the future")
-  private Date dueDate;
+  @FutureOrPresent(message = "Due date must be today or some time in the future")
+  private LocalDateTime dueDate;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
@@ -97,11 +98,11 @@ public class Project {
     this.description = description;
   }
 
-  public Date getDueDate() {
+  public LocalDateTime getDueDate() {
     return dueDate;
   }
 
-  public void setDueDate(Date dueDate) {
+  public void setDueDate(LocalDateTime dueDate) {
     this.dueDate = dueDate;
   }
 

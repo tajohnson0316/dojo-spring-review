@@ -26,10 +26,11 @@ public class ProjectController {
   //  =============== GET ROUTES ===============
 
   // *** DISPLAY DASHBOARD ***
+  // TODO: Order the lists of projects
   @GetMapping("/dashboard")
   public String dashboard(Model model, HttpSession session) {
     UUID userId = (UUID) session.getAttribute("userId");
-    if (!userService.isValidId(userId)) {
+    if (userService.isInvalidId(userId)) {
       return "redirect:/logout";
     }
 
@@ -43,7 +44,6 @@ public class ProjectController {
     List<Project> unjoinedProjects = projectService.allProjects();
     unjoinedProjects.removeIf(project -> user.getProjects().contains(project));
     model.addAttribute("unjoinedProjects", unjoinedProjects);
-
     model.addAttribute("joinedProjects", user.getProjects());
 
     return "/project/dashboard.jsp";
@@ -56,14 +56,11 @@ public class ProjectController {
     HttpSession session,
     Model model
   ) {
-    if (session.getAttribute("userId") == null) {
+    UUID userId = (UUID) session.getAttribute("userId");
+    if (userService.isInvalidId(userId)) {
       return "redirect:/logout";
     }
 
-    UUID userId = (UUID) session.getAttribute("userId");
-    if (!userService.isValidId(userId)) {
-      return "redirect:/logout";
-    }
     model.addAttribute("userId", userId);
 
     return "project/projectForm.jsp";
@@ -76,12 +73,8 @@ public class ProjectController {
     HttpSession session,
     Model model
   ) {
-    if (session.getAttribute("userId") == null) {
-      return "redirect:/logout";
-    }
-
     UUID userId = (UUID) session.getAttribute("userId");
-    if (!userService.isValidId(userId)) {
+    if (userService.isInvalidId(userId)) {
       return "redirect:/logout";
     }
 
@@ -98,17 +91,14 @@ public class ProjectController {
     HttpSession session,
     Model model
   ) {
-    if (session.getAttribute("userId") == null) {
-      return "redirect:/logout";
-    }
-
     UUID userId = (UUID) session.getAttribute("userId");
-    if (!userService.isValidId(userId)) {
+    if (userService.isInvalidId(userId)) {
       return "redirect:/logout";
     }
 
     Project project = projectService.getProjectById(id);
     model.addAttribute("project", project);
+    model.addAttribute("teamSize", project.getTeam().size());
     model.addAttribute("userId", userId);
 
     return "project/projectEditForm.jsp";
@@ -152,6 +142,8 @@ public class ProjectController {
 
     if (result.hasErrors()) {
       model.addAttribute("project", project);
+      model.addAttribute("teamSize",
+        projectService.getProjectById(project.getId()).getTeam().size());
       model.addAttribute("userId", userId);
       return "project/projectEditForm.jsp";
     }

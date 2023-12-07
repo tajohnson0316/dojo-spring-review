@@ -81,7 +81,7 @@
     <form:label path="dueDate" class="form-label">
       Due Date:
     </form:label>
-    <form:input type="date" path="dueDate" class="form-control"/>
+    <form:input type="datetime-local" path="dueDate" class="form-control"/>
     <p class="text-danger">
       <form:errors path="dueDate"/>
     </p>

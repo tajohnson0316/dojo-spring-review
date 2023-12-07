@@ -87,7 +87,15 @@
                   ${project.lead.username}
               </td>
               <td>
-                <fmt:formatDate value="${project.dueDate}"/>
+                <fmt:parseDate
+                    value="${project.dueDate}"
+                    pattern="yyyy-MM-dd'T'HH:mm"
+                    var="parsedDateTime"
+                    type="both"
+                />
+                <span>
+                  <fmt:formatDate type="both" dateStyle="medium" timeStyle="short" value="${parsedDateTime}"/>
+                </span>
               </td>
               <td>
                 <div class="d-flex justify-content-center">
@@ -131,7 +139,15 @@
                   ${project.lead.username}
               </td>
               <td>
-                <fmt:formatDate value="${project.dueDate}"/>
+                <fmt:parseDate
+                    value="${project.dueDate}"
+                    pattern="yyyy-MM-dd'T'HH:mm"
+                    var="parsedDateTime"
+                    type="both"
+                />
+                <span>
+                  <fmt:formatDate type="both" dateStyle="medium" timeStyle="short" value="${parsedDateTime}"/>
+                </span>
               </td>
               <td>
                   <%-- CONDITIONAL RENDERING OF EDIT OPTION FOR TEAM LEADS --%>

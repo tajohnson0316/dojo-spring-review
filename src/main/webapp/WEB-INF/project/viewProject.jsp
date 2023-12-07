@@ -70,7 +70,8 @@
       </div>
       <div class="d-flex justify-content-start gap-3 mb-3">
         <span class="fw-bold">Due Date:</span>
-        <span><fmt:formatDate value="${project.dueDate}"/></span>
+        <fmt:parseDate value="${project.dueDate}" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both"/>
+        <span><fmt:formatDate type="both" dateStyle="medium" timeStyle="short" value="${parsedDateTime}"/></span>
       </div>
     </div>
   </div>
